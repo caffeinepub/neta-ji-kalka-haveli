@@ -118,25 +118,42 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    addAdmin(p: Principal): Promise<void>;
     addGalleryImage(url: string, caption: string): Promise<void>;
+    addGalleryImageWithToken(token: string, url: string, caption: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    changeSecondaryAdminPassword(token: string, oldHash: string, newHash: string): Promise<boolean>;
+    claimFirstAdmin(): Promise<boolean>;
     createMenuItem(name: string, description: string, price: string, category: string): Promise<bigint>;
+    createMenuItemWithToken(token: string, name: string, description: string, price: string, category: string): Promise<bigint>;
+    createSecondaryAdmin(email: string, passwordHash: string): Promise<void>;
     deleteGalleryImage(url: string): Promise<void>;
+    deleteGalleryImageWithToken(token: string, url: string): Promise<void>;
     deleteMenuItem(id: bigint): Promise<void>;
+    deleteMenuItemWithToken(token: string, id: bigint): Promise<void>;
     getAllAvailableMenuItems(): Promise<Array<MenuItem>>;
     getAllContactMessages(): Promise<Array<ContactMessage>>;
+    getAllContactMessagesWithToken(token: string): Promise<Array<ContactMessage>>;
     getAllGalleryImages(): Promise<Array<GalleryImage>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getMainAdmin(): Promise<Principal | null>;
     getMenuItemsByCategory(category: string): Promise<Array<MenuItem>>;
     getStats(): Promise<[bigint, bigint, bigint]>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     initialize(): Promise<void>;
     isCallerAdmin(): Promise<boolean>;
+    listAdmins(): Promise<Array<Principal>>;
+    listSecondaryAdmins(): Promise<Array<[bigint, string]>>;
+    removeAdmin(p: Principal): Promise<void>;
+    removeSecondaryAdmin(email: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    secondaryAdminLogin(email: string, passwordHash: string): Promise<string | null>;
     submitContactMessage(name: string, phone: string, message: string): Promise<void>;
     toggleMenuItemAvailability(id: bigint): Promise<void>;
     updateMenuItem(id: bigint, name: string, description: string, price: string, category: string, isAvailable: boolean): Promise<void>;
+    updateMenuItemWithToken(token: string, id: bigint, name: string, description: string, price: string, category: string, isAvailable: boolean): Promise<void>;
+    validateSecondaryToken(token: string): Promise<boolean>;
 }
 import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -155,6 +172,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async addAdmin(arg0: Principal): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAdmin(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAdmin(arg0);
+            return result;
+        }
+    }
     async addGalleryImage(arg0: string, arg1: string): Promise<void> {
         if (this.processError) {
             try {
@@ -166,6 +197,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.addGalleryImage(arg0, arg1);
+            return result;
+        }
+    }
+    async addGalleryImageWithToken(arg0: string, arg1: string, arg2: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addGalleryImageWithToken(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addGalleryImageWithToken(arg0, arg1, arg2);
             return result;
         }
     }
@@ -183,6 +228,34 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async changeSecondaryAdminPassword(arg0: string, arg1: string, arg2: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.changeSecondaryAdminPassword(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.changeSecondaryAdminPassword(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async claimFirstAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.claimFirstAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.claimFirstAdmin();
+            return result;
+        }
+    }
     async createMenuItem(arg0: string, arg1: string, arg2: string, arg3: string): Promise<bigint> {
         if (this.processError) {
             try {
@@ -194,6 +267,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.createMenuItem(arg0, arg1, arg2, arg3);
+            return result;
+        }
+    }
+    async createMenuItemWithToken(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createMenuItemWithToken(arg0, arg1, arg2, arg3, arg4);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createMenuItemWithToken(arg0, arg1, arg2, arg3, arg4);
+            return result;
+        }
+    }
+    async createSecondaryAdmin(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createSecondaryAdmin(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createSecondaryAdmin(arg0, arg1);
             return result;
         }
     }
@@ -211,6 +312,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async deleteGalleryImageWithToken(arg0: string, arg1: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteGalleryImageWithToken(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteGalleryImageWithToken(arg0, arg1);
+            return result;
+        }
+    }
     async deleteMenuItem(arg0: bigint): Promise<void> {
         if (this.processError) {
             try {
@@ -222,6 +337,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.deleteMenuItem(arg0);
+            return result;
+        }
+    }
+    async deleteMenuItemWithToken(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteMenuItemWithToken(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteMenuItemWithToken(arg0, arg1);
             return result;
         }
     }
@@ -250,6 +379,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getAllContactMessages();
+            return result;
+        }
+    }
+    async getAllContactMessagesWithToken(arg0: string): Promise<Array<ContactMessage>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllContactMessagesWithToken(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllContactMessagesWithToken(arg0);
             return result;
         }
     }
@@ -293,6 +436,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getCallerUserRole();
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getMainAdmin(): Promise<Principal | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getMainAdmin();
+                return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getMainAdmin();
+            return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
         }
     }
     async getMenuItemsByCategory(arg0: string): Promise<Array<MenuItem>> {
@@ -373,6 +530,62 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async listAdmins(): Promise<Array<Principal>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listAdmins();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listAdmins();
+            return result;
+        }
+    }
+    async listSecondaryAdmins(): Promise<Array<[bigint, string]>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listSecondaryAdmins();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listSecondaryAdmins();
+            return result;
+        }
+    }
+    async removeAdmin(arg0: Principal): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.removeAdmin(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.removeAdmin(arg0);
+            return result;
+        }
+    }
+    async removeSecondaryAdmin(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.removeSecondaryAdmin(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.removeSecondaryAdmin(arg0);
+            return result;
+        }
+    }
     async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
         if (this.processError) {
             try {
@@ -385,6 +598,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
             return result;
+        }
+    }
+    async secondaryAdminLogin(arg0: string, arg1: string): Promise<string | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.secondaryAdminLogin(arg0, arg1);
+                return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.secondaryAdminLogin(arg0, arg1);
+            return from_candid_opt_n7(this._uploadFile, this._downloadFile, result);
         }
     }
     async submitContactMessage(arg0: string, arg1: string, arg2: string): Promise<void> {
@@ -429,11 +656,45 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async updateMenuItemWithToken(arg0: string, arg1: bigint, arg2: string, arg3: string, arg4: string, arg5: string, arg6: boolean): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateMenuItemWithToken(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateMenuItemWithToken(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            return result;
+        }
+    }
+    async validateSecondaryToken(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.validateSecondaryToken(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.validateSecondaryToken(arg0);
+            return result;
+        }
+    }
 }
 function from_candid_UserRole_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n5(_uploadFile, _downloadFile, value);
 }
 function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [Principal]): Principal | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {

@@ -1,31 +1,25 @@
-# Neta Ji (Kalka Haveli) Family Restaurant
+# Neta Ji Kalka Haveli - Minimal Core System
 
 ## Current State
-New project. User provided an HTML mockup for a restaurant website.
+Previous builds failed due to complexity. Starting fresh with a minimal, stable foundation.
 
 ## Requested Changes (Diff)
 
 ### Add
-- **Home page (`/`)**: Header with restaurant name, nav bar (Menu, Gallery, Contact), hero section with "Best Food on NH77", welcome section, footer
-- **Menu page (`/menu`)**: Categorized food items (Veg & Non-Veg), item name + description + price
-- **Admin page (`/admin`)**: Role-protected page for restaurant owner to add/edit/delete menu items and gallery photos
-- **Panel page (`/panel`)**: Control panel showing stats: total menu items, categories, messages/inquiries
-- **Gallery page (`/gallery`)**: Photo grid of restaurant / food images
-- **Contact page (`/contact`)**: Contact form (name, phone, message) + address/location info
+- `/admin-login` route: First-time main admin setup (if no admin exists), then email+password login
+- `/staff-login` route: Email+password login for staff accounts created by admin
+- `/dashboard` route: Protected; shows menu management (add/edit/delete items) and staff management (main admin only)
+- Backend: user store with hashed passwords, session tokens, role-based access (mainAdmin, admin, staff)
+- Default seed: main admin account (shashisingh6745@gmail.com / Shashi@1234, mustChangePassword=true)
 
 ### Modify
-N/A
+- Nothing (fresh minimal build)
 
 ### Remove
-N/A
+- All previous complex features not in scope
 
 ## Implementation Plan
-1. Backend: Menu items CRUD, contact message storage, gallery image references, admin role check
-2. Authorization component for admin-only access
-3. Frontend: React app with React Router for all 6 pages
-   - Brand color: deep maroon (#7a0000) as primary, black nav/footer
-   - Hero with food background image
-   - Menu grouped by category (Veg / Non-Veg / Drinks etc.)
-   - Admin CRUD for menu items
-   - Panel with summary stats
-   - Contact form that saves messages to backend
+1. Backend: users (id, email, hashedPassword, role, mustChangePassword), sessions, menuItems (id, name, description, price, category, available)
+2. Backend APIs: login, logout, getSession, createStaff, removeUser, listUsers, addMenuItem, editMenuItem, deleteMenuItem, listMenuItems
+3. Frontend: AdminLoginPage, StaffLoginPage, DashboardPage with MenuManagement tab and StaffManagement tab (main admin only)
+4. Route guards: redirect unauthenticated users to appropriate login page

@@ -32,28 +32,57 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addAdmin' : ActorMethod<[Principal], undefined>,
   'addGalleryImage' : ActorMethod<[string, string], undefined>,
+  'addGalleryImageWithToken' : ActorMethod<[string, string, string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'changeSecondaryAdminPassword' : ActorMethod<
+    [string, string, string],
+    boolean
+  >,
+  'claimFirstAdmin' : ActorMethod<[], boolean>,
   'createMenuItem' : ActorMethod<[string, string, string, string], bigint>,
+  'createMenuItemWithToken' : ActorMethod<
+    [string, string, string, string, string],
+    bigint
+  >,
+  'createSecondaryAdmin' : ActorMethod<[string, string], undefined>,
   'deleteGalleryImage' : ActorMethod<[string], undefined>,
+  'deleteGalleryImageWithToken' : ActorMethod<[string, string], undefined>,
   'deleteMenuItem' : ActorMethod<[bigint], undefined>,
+  'deleteMenuItemWithToken' : ActorMethod<[string, bigint], undefined>,
   'getAllAvailableMenuItems' : ActorMethod<[], Array<MenuItem>>,
   'getAllContactMessages' : ActorMethod<[], Array<ContactMessage>>,
+  'getAllContactMessagesWithToken' : ActorMethod<
+    [string],
+    Array<ContactMessage>
+  >,
   'getAllGalleryImages' : ActorMethod<[], Array<GalleryImage>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getMainAdmin' : ActorMethod<[], [] | [Principal]>,
   'getMenuItemsByCategory' : ActorMethod<[string], Array<MenuItem>>,
   'getStats' : ActorMethod<[], [bigint, bigint, bigint]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'initialize' : ActorMethod<[], undefined>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'listAdmins' : ActorMethod<[], Array<Principal>>,
+  'listSecondaryAdmins' : ActorMethod<[], Array<[bigint, string]>>,
+  'removeAdmin' : ActorMethod<[Principal], undefined>,
+  'removeSecondaryAdmin' : ActorMethod<[string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'secondaryAdminLogin' : ActorMethod<[string, string], [] | [string]>,
   'submitContactMessage' : ActorMethod<[string, string, string], undefined>,
   'toggleMenuItemAvailability' : ActorMethod<[bigint], undefined>,
   'updateMenuItem' : ActorMethod<
     [bigint, string, string, string, string, boolean],
     undefined
   >,
+  'updateMenuItemWithToken' : ActorMethod<
+    [string, bigint, string, string, string, string, boolean],
+    undefined
+  >,
+  'validateSecondaryToken' : ActorMethod<[string], boolean>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

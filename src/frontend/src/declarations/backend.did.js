@@ -36,20 +36,42 @@ export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addAdmin' : IDL.Func([IDL.Principal], [], []),
   'addGalleryImage' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'addGalleryImageWithToken' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'changeSecondaryAdminPassword' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Bool],
+      [],
+    ),
+  'claimFirstAdmin' : IDL.Func([], [IDL.Bool], []),
   'createMenuItem' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [IDL.Nat],
       [],
     ),
+  'createMenuItemWithToken' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Nat],
+      [],
+    ),
+  'createSecondaryAdmin' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'deleteGalleryImage' : IDL.Func([IDL.Text], [], []),
+  'deleteGalleryImageWithToken' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'deleteMenuItem' : IDL.Func([IDL.Nat], [], []),
+  'deleteMenuItemWithToken' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'getAllAvailableMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
   'getAllContactMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
+  'getAllContactMessagesWithToken' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(ContactMessage)],
+      ['query'],
+    ),
   'getAllGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getMainAdmin' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
   'getMenuItemsByCategory' : IDL.Func(
       [IDL.Text],
       [IDL.Vec(MenuItem)],
@@ -63,7 +85,20 @@ export const idlService = IDL.Service({
     ),
   'initialize' : IDL.Func([], [], []),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'listAdmins' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+  'listSecondaryAdmins' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Text))],
+      ['query'],
+    ),
+  'removeAdmin' : IDL.Func([IDL.Principal], [], []),
+  'removeSecondaryAdmin' : IDL.Func([IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'secondaryAdminLogin' : IDL.Func(
+      [IDL.Text, IDL.Text],
+      [IDL.Opt(IDL.Text)],
+      [],
+    ),
   'submitContactMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
   'toggleMenuItemAvailability' : IDL.Func([IDL.Nat], [], []),
   'updateMenuItem' : IDL.Func(
@@ -71,6 +106,12 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'updateMenuItemWithToken' : IDL.Func(
+      [IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+      [],
+      [],
+    ),
+  'validateSecondaryToken' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
 });
 
 export const idlInitArgs = [];
@@ -101,24 +142,50 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addAdmin' : IDL.Func([IDL.Principal], [], []),
     'addGalleryImage' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'addGalleryImageWithToken' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'changeSecondaryAdminPassword' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Bool],
+        [],
+      ),
+    'claimFirstAdmin' : IDL.Func([], [IDL.Bool], []),
     'createMenuItem' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [IDL.Nat],
         [],
       ),
+    'createMenuItemWithToken' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Nat],
+        [],
+      ),
+    'createSecondaryAdmin' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'deleteGalleryImage' : IDL.Func([IDL.Text], [], []),
+    'deleteGalleryImageWithToken' : IDL.Func([IDL.Text, IDL.Text], [], []),
     'deleteMenuItem' : IDL.Func([IDL.Nat], [], []),
+    'deleteMenuItemWithToken' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'getAllAvailableMenuItems' : IDL.Func([], [IDL.Vec(MenuItem)], ['query']),
     'getAllContactMessages' : IDL.Func(
         [],
         [IDL.Vec(ContactMessage)],
         ['query'],
       ),
+    'getAllContactMessagesWithToken' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(ContactMessage)],
+        ['query'],
+      ),
     'getAllGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getMainAdmin' : IDL.Func([], [IDL.Opt(IDL.Principal)], ['query']),
     'getMenuItemsByCategory' : IDL.Func(
         [IDL.Text],
         [IDL.Vec(MenuItem)],
@@ -132,7 +199,20 @@ export const idlFactory = ({ IDL }) => {
       ),
     'initialize' : IDL.Func([], [], []),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'listAdmins' : IDL.Func([], [IDL.Vec(IDL.Principal)], ['query']),
+    'listSecondaryAdmins' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Nat, IDL.Text))],
+        ['query'],
+      ),
+    'removeAdmin' : IDL.Func([IDL.Principal], [], []),
+    'removeSecondaryAdmin' : IDL.Func([IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'secondaryAdminLogin' : IDL.Func(
+        [IDL.Text, IDL.Text],
+        [IDL.Opt(IDL.Text)],
+        [],
+      ),
     'submitContactMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
     'toggleMenuItemAvailability' : IDL.Func([IDL.Nat], [], []),
     'updateMenuItem' : IDL.Func(
@@ -140,6 +220,12 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'updateMenuItemWithToken' : IDL.Func(
+        [IDL.Text, IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Bool],
+        [],
+        [],
+      ),
+    'validateSecondaryToken' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
   });
 };
 
