@@ -16,8 +16,6 @@ actor {
 
   public type AdminRole = { #mainAdmin; #admin; #staff };
 
-  // NOTE: Keep this type identical to the previous version for upgrade compatibility.
-  // mustChangePassword is tracked separately in mustChangePwd map.
   public type AdminAccount = {
     id : Nat;
     email : Text;
@@ -25,7 +23,6 @@ actor {
     role : AdminRole;
   };
 
-  // NOTE: Keep this type identical to the previous version for upgrade compatibility.
   public type AdminSession = {
     adminId : Nat;
     email : Text;
@@ -104,13 +101,11 @@ actor {
   let secondaryAdmins = Map.empty<Text, LegacySecondaryAdmin>();
   let secondarySessions = Map.empty<Text, LegacySecondaryAdminSession>();
   let accessControlState = AccessControl.initState();
-
-  // Keep isSetup from old version to avoid M0169 discard error
   var isSetup = false;
+  var isSeeded = false;
 
   // ── State ──────────────────────────────────────────────────────────
 
-  var isSeeded = false;
   var adminCounter = 0;
   var sessionCounter = 0;
   var nextMenuItemId = 1;
@@ -118,7 +113,6 @@ actor {
 
   let admins = Map.empty<Text, AdminAccount>();
   let sessions = Map.empty<Text, AdminSession>();
-  // Separate map for mustChangePassword flag (avoids type incompatibility on upgrade)
   let mustChangePwd = Map.empty<Text, Bool>();
 
   let menuItems = Map.empty<Nat, MenuItem>();
@@ -131,28 +125,14 @@ actor {
     address = "Kalka Haveli, Kalka, Haryana 133302";
   };
 
-  // ── Seed Default Admin ─────────────────────────────────────────────
-  // SHA-256("Shashi@1234") = c0ec78e83524f311d98306add543b7cc1c8c94cea368c6044f21d01d73e5b05e
-
-  func seedDefaultAdmin() {
-    if (isSeeded) { return };
-    if (admins.containsKey("shashisingh6745@gmail.com")) {
-      isSeeded := true;
-      return;
-    };
-    let account : AdminAccount = {
-      id = 0;
-      email = "shashisingh6745@gmail.com";
-      passwordHash = "c0ec78e83524f311d98306add543b7cc1c8c94cea368c6044f21d01d73e5b05e";
-      role = #mainAdmin;
-    };
-    admins.add("shashisingh6745@gmail.com", account);
-    mustChangePwd.add("shashisingh6745@gmail.com", true);
-    adminCounter := 1;
-    isSeeded := true;
-  };
-
   // ── Internal Helpers ───────────────────────────────────────────────
+
+  func hasMainAdmin() : Bool {
+    for (account in admins.values()) {
+      if (account.role == #mainAdmin) { return true };
+    };
+    false;
+  };
 
   func getSession(token : Text) : ?AdminSession {
     switch (sessions.get(token)) {
@@ -195,10 +175,38 @@ actor {
     };
   };
 
+  // ── First-Time Setup ───────────────────────────────────────────────
+
+  /// Returns true if no main admin account exists yet.
+  public query func isSetupRequired() : async Bool {
+    not hasMainAdmin();
+  };
+
+  /// Creates the main admin account. Only succeeds if no main admin exists.
+  public func setupMainAdmin(email : Text, passwordHash : Text) : async Bool {
+    if (hasMainAdmin()) {
+      Runtime.trap("Setup already completed. A main admin account already exists.");
+    };
+    let normalizedEmail = email;
+    if (admins.containsKey(normalizedEmail)) {
+      Runtime.trap("An account with this email already exists.");
+    };
+    let account : AdminAccount = {
+      id = adminCounter;
+      email = normalizedEmail;
+      passwordHash = passwordHash;
+      role = #mainAdmin;
+    };
+    admins.add(normalizedEmail, account);
+    // Main admin sets their own password, no forced change
+    mustChangePwd.add(normalizedEmail, false);
+    adminCounter += 1;
+    true;
+  };
+
   // ── Auth ───────────────────────────────────────────────────────────
 
   public func login(email : Text, passwordHash : Text) : async ?Text {
-    seedDefaultAdmin();
     switch (admins.get(email)) {
       case (null) { null };
       case (?account) {

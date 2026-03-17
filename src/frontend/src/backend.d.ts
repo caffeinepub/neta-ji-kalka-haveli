@@ -43,6 +43,10 @@ export type AdminRole =
   | { staff: null };
 
 export interface backendInterface {
+  // Setup
+  isSetupRequired(): Promise<boolean>;
+  setupMainAdmin(email: string, passwordHash: string): Promise<boolean>;
+
   // Auth
   login(email: string, passwordHash: string): Promise<string | null>;
   validateToken(token: string): Promise<SessionInfo | null>;
