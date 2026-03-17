@@ -14,6 +14,7 @@ import DashboardPage from "./pages/DashboardPage";
 import GalleryPage from "./pages/GalleryPage";
 import HomePage from "./pages/HomePage";
 import MenuPage from "./pages/MenuPage";
+import StaffDashboardPage from "./pages/StaffDashboardPage";
 import StaffLoginPage from "./pages/StaffLoginPage";
 
 // Root with public layout
@@ -80,6 +81,17 @@ const dashboardRoute = createRoute({
   },
   component: DashboardPage,
 });
+const staffDashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/staff-dashboard",
+  beforeLoad: () => {
+    const token = localStorage.getItem("sessionToken");
+    if (!token) {
+      throw redirect({ to: "/staff-login" });
+    }
+  },
+  component: StaffDashboardPage,
+});
 
 // Legacy redirects
 const adminRoute = createRoute({
@@ -101,6 +113,7 @@ const routeTree = rootRoute.addChildren([
   adminLoginRoute,
   staffLoginRoute,
   dashboardRoute,
+  staffDashboardRoute,
   adminRoute,
   panelRoute,
 ]);
